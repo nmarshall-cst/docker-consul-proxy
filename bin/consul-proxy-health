@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+listenOn="8080"
+
+log() {
+    echo "  $(date -u '+%Y-%m-%d %H:%M:%S') : $@"
+}
+log
+
+EXTERNALIP=$(ip addr show eth1 | grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}')
+
+if netstat -natp |grep -q $listenOn ; then
+    log " ${HOSTNAME} is healthy. Listening on ${EXTERNALIP}:8080"
+else
+    log "Starting consul-proxy"
+    /opt/containerbuddy/containerbuddy -config file:///opt/containerbuddy/consul-proxy.json /usr/bin/run_consul-proxy
+fi

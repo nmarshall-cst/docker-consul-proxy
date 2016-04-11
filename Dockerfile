@@ -1,14 +1,26 @@
 FROM node:slim
-MAINTAINER Michael Zeller <mike.zeller@joyent.com>
+MAINTAINER CenterStone Technologies, Inc.
 
 #install dependencies
-RUN apt-get update
-RUN npm install -g json
-RUN npm install -g http-host-proxy 
+RUN apt-get update -qq \
+&& apt-get upgrade -yq \
+&& apt-get install -yq \
+    less \
+    nano \
+    jq \
+    netcat \
+    net-tools \
+&& npm install -g -q json \
+&& npm install -g http-host-proxy \
+&& export CB=containerbuddy-1.3.0 \
+&& mkdir -p /opt/containerbuddy \
+&& curl -Lo /tmp/${CB}.tar.gz https://github.com/joyent/containerbuddy/releases/download/1.3.0/containerbuddy-1.3.0.tar.gz \
+&& tar xzf /tmp/${CB}.tar.gz -C /tmp && rm /tmp/${CB}.tar.gz \
+&& mv /tmp/containerbuddy /opt/containerbuddy/
 
-COPY config.json config.json
-COPY passhash.txt passhash.txt 
-COPY setup.sh setup.sh
+COPY /opt/containerbuddy /opt/containerbuddy
+COPY bin/* /usr/bin/
+COPY config/* /config/
 
 EXPOSE 8080
-ENTRYPOINT ["./setup.sh"]
+ENTRYPOINT ["/usr/bin/run_consul-proxy"]

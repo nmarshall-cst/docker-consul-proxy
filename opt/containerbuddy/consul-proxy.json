@@ -1,0 +1,13 @@
+{ "consul": "consul:8500",
+  "services": [
+    {
+      "name": "consul-proxy",
+      "port": 8080,
+      "interfaces": ["eth0"],
+      "health": "/usr/bin/consul-proxy-health",
+      "tags": [],
+      "poll": 10,
+      "ttl": 30
+    }
+  ]
+}
